@@ -7,11 +7,16 @@
     android:background="@android:color/white"
     tools:context=".home.presentation.HomeActivity">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
                    <!-- Top Header Section -->
                    <LinearLayout
@@ -41,20 +46,12 @@
                                    android:id="@+id/textGoodMorning"
                                    android:layout_width="wrap_content"
                                    android:layout_height="wrap_content"
-                                   android:text="Good Morning, "
-                                   android:textSize="24sp"
+                                   android:text="Good Morning, Arsh"
+                                   android:textSize="28sp"
                                    android:textColor="@android:color/black"
-                                   android:fontFamily="@font/inter_18pt_bold_ttf" />
-
-                               <TextView
-                                   android:id="@+id/textName"
-                                   android:layout_width="wrap_content"
-                                   android:layout_height="wrap_content"
-                                   android:text="Arsh"
-                                   android:textSize="24sp"
+                                   android:fontFamily="@font/plus_jakarta_sans_family"
                                    android:textStyle="bold"
-                                   android:textColor="@android:color/black"
-                                   android:fontFamily="@font/inter_18pt_bold_ttf" />
+                                   android:textFontWeight="700" />
 
                            </LinearLayout>
 
@@ -73,53 +70,46 @@
                        <!-- Search Bar with Stationary Icon -->
                        <LinearLayout
                            android:layout_width="match_parent"
-                           android:layout_height="40dp"
+                           android:layout_height="wrap_content"
                            android:orientation="horizontal"
                            android:layout_marginBottom="8dp"
                            android:gravity="center_vertical">
 
-                           <!-- Stationary Search Icon -->
-                           <ImageView
-                               android:layout_width="40dp"
-                               android:layout_height="40dp"
-                               android:src="@drawable/search"
-                               android:layout_marginEnd="12dp"
-                               android:tint="@android:color/black" />
-
-                           <!-- Animated Search Bar Container -->
+                           <!-- Search Bar Container (with icon inside) -->
                            <LinearLayout
                                android:id="@+id/searchBarContainer"
-                               android:layout_width="0dp"
-                               android:layout_height="wrap_content"
-                               android:layout_weight="1"
+                               android:layout_width="match_parent"
+                               android:layout_height="48dp"
                                android:orientation="horizontal"
                                android:background="@drawable/search_background"
-                               android:paddingStart="0dp"
-                               android:paddingEnd="12dp"
-                               android:paddingTop="10dp"
-                               android:paddingBottom="8dp"
-                               android:gravity="center_vertical"
-                               android:minHeight="40dp">
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:gravity="center_vertical">
+
+                               <ImageView
+                                   android:id="@+id/searchIcon"
+                                   android:layout_width="36dp"
+                                   android:layout_height="36dp"
+                                   android:src="@drawable/search"
+                                   android:tint="#FF000000" />
 
                                <EditText
                                    android:id="@+id/searchEditText"
-                                   android:layout_width="match_parent"
+                                   android:layout_width="0dp"
                                    android:layout_height="wrap_content"
-                                   android:hint="Search services, e.g., plumbing"
+                                   android:layout_weight="1"
+                                   android:hint="Explore our services"
                                    android:background="@null"
-                                   android:textSize="16sp"
+                                   android:textSize="14sp"
                                    android:textColor="#FF000000"
-                                   android:textColorHint="#FF666666"
-                                   android:fontFamily="@font/inter_18pt_regular_ttf"
+                                   android:textColorHint="#FF9C9C9C"
+                                   android:fontFamily="@font/plus_jakarta_sans_family"
                                    android:inputType="text"
                                    android:singleLine="true"
                                    android:gravity="start|center_vertical"
-                                   android:textAlignment="textStart"
-                                   android:paddingStart="12dp"
-                                   android:paddingEnd="8dp"
-                                   android:paddingTop="2dp"
-                                   android:paddingBottom="2dp"
-                                   android:minHeight="24dp" />
+                                   android:paddingStart="8dp"
+                                   android:paddingTop="4dp"
+                                   android:paddingBottom="4dp" />
 
                            </LinearLayout>
 
@@ -145,6 +135,7 @@
 
                 <!-- Title -->
                 <TextView
+                    android:id="@+id/textViewPopularNearYou"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -152,7 +143,7 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/black"
-                    android:fontFamily="@font/inter_18pt_bold_ttf"
+                    android:fontFamily="@font/plus_jakarta_sans_family"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:layout_marginEnd="12dp" />
@@ -173,7 +164,7 @@
                         android:text="All"
                         android:textSize="12sp"
                         android:textColor="@android:color/black"
-                        android:fontFamily="@font/inter_18pt_semibold_ttf"
+                        android:fontFamily="@font/plus_jakarta_sans_family"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:gravity="center"
@@ -189,7 +180,7 @@
                         android:text="Home"
                         android:textSize="12sp"
                         android:textColor="@android:color/white"
-                        android:fontFamily="@font/inter_18pt_regular_ttf"
+                        android:fontFamily="@font/plus_jakarta_sans_family"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:gravity="center"
@@ -205,7 +196,7 @@
                         android:text="Outdoor"
                         android:textSize="12sp"
                         android:textColor="@android:color/white"
-                        android:fontFamily="@font/inter_18pt_regular_ttf"
+                        android:fontFamily="@font/plus_jakarta_sans_family"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:gravity="center"
@@ -222,61 +213,60 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewServices"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:nestedScrollingEnabled="true"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
                 android:scrollbars="vertical"
                 android:paddingBottom="80dp"
                 tools:listitem="@layout/item_service" />
 
-        </LinearLayout>
+        </LinearLayout> <!-- Closes LinearLayout from line 121 (Popular near you Section) -->
+    </LinearLayout> <!-- NEW LINE: Closes LinearLayout from line 15 (main scrollable content) -->
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Bottom Navigation Bar -->
+    <LinearLayout
+        android:id="@+id/bottomNavigationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/floating_nav_background"
+        android:elevation="12dp"
+        android:padding="12dp"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom">
+
+        <!-- Home Navigation Item -->
+        <include
+            android:id="@+id/navHome"
+            layout="@layout/nav_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <!-- Services Navigation Item -->
+        <include
+            android:id="@+id/navServices"
+            layout="@layout/nav_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <!-- Messages Navigation Item -->
+        <include
+            android:id="@+id/navMessages"
+            layout="@layout/nav_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <!-- Profile Navigation Item -->
+        <include
+            android:id="@+id/navProfile"
+            layout="@layout/nav_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
     </LinearLayout>
-
-<!-- Floating Bottom Navigation Bar -->
-<LinearLayout
-    android:id="@+id/bottomNavigationContainer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@drawable/floating_nav_background"
-    android:elevation="12dp"
-    android:padding="12dp"
-    android:layout_margin="16dp"
-    android:layout_gravity="bottom">
-
-    <!-- Home Navigation Item -->
-    <include
-        android:id="@+id/navHome"
-        layout="@layout/nav_item"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-    <!-- Services Navigation Item -->
-    <include
-        android:id="@+id/navServices"
-        layout="@layout/nav_item"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-    <!-- Messages Navigation Item -->
-    <include
-        android:id="@+id/navMessages"
-        layout="@layout/nav_item"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-    <!-- Profile Navigation Item -->
-    <include
-        android:id="@+id/navProfile"
-        layout="@layout/nav_item"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-</LinearLayout>
 
 </FrameLayout>

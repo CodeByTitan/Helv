@@ -38,6 +38,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
+            android:fontFamily="@font/plus_jakarta_sans_family"
             android:gravity="center"
             android:padding="12dp" />
 

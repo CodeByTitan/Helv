@@ -46,7 +46,8 @@ class GreetingAnimator {
                 }
 
                 val fadeIn = ObjectAnimator.ofFloat(greetingContainer, View.ALPHA, 0f, 1f).apply {
-                    duration = 550
+                    duration = 600
+                    startDelay = 150
                 }
 
                 // Optional: promote to a hardware layer during the animation for smoothness
