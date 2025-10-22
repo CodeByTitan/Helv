@@ -179,7 +179,7 @@ class DetailsFragment : Fragment() {
             authViewModel.updateDetailsState.collect { resource ->
                 when (resource) {
                     is ca.unb.mobiledev.handyhub.util.Resource.Success -> {
-                        (requireActivity() as? OnboardingActivity)?.navigateToMainActivity()
+                        // Navigation is handled by OnboardingActivity
                     }
                     is ca.unb.mobiledev.handyhub.util.Resource.Error -> {
                         binding.buttonContinue.isEnabled = true

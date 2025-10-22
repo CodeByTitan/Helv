@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".home.presentation.HomeActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+                   
+                   <LinearLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:orientation="vertical"
+                       android:layout_marginBottom="24dp">
+
+                       
+                       <LinearLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:orientation="horizontal"
+                           android:layout_marginBottom="16dp"
+                           android:gravity="center_vertical">
+
+                           
+                           <LinearLayout
+                               android:id="@+id/greetingContainer"
+                               android:layout_width="0dp"
+                               android:layout_height="wrap_content"
+                               android:layout_weight="1"
+                               android:orientation="horizontal"
+                               android:gravity="center_vertical">
+
+                               <TextView
+                                   android:id="@+id/textGoodMorning"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:text="Good Morning, Arsh"
+                                   android:textSize="28sp"
+                                   android:textColor="@android:color/black"
+                                   android:fontFamily="@font/plus_jakarta_sans_family"
+                                   android:textStyle="bold"
+                                   android:textFontWeight="700" />
+
+                           </LinearLayout>
+
+                       </LinearLayout>
+
+                       
+                       <LinearLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:orientation="horizontal"
+                           android:layout_marginBottom="8dp"
+                           android:gravity="center_vertical">
+
+                           
+                           <LinearLayout
+                               android:id="@+id/searchBarContainer"
+                               android:layout_width="match_parent"
+                               android:layout_height="48dp"
+                               android:orientation="horizontal"
+                               android:background="@drawable/search_background"
+                               android:paddingStart="16dp"
+                               android:paddingEnd="16dp"
+                               android:gravity="center_vertical">
+
+                               <ImageView
+                                   android:id="@+id/searchIcon"
+                                   android:layout_width="36dp"
+                                   android:layout_height="36dp"
+                                   android:src="@drawable/search"
+                                   android:tint="#FF000000" />
+
+                               <EditText
+                                   android:id="@+id/searchEditText"
+                                   android:layout_width="0dp"
+                                   android:layout_height="match_parent"
+                                   android:layout_weight="1"
+                                   android:layout_marginTop="-2dp"
+                                   android:hint="Explore our services"
+                                   android:background="@null"
+                                   android:textSize="14sp"
+                                   android:textColor="#FF000000"
+                                   android:textColorHint="#FF9C9C9C"
+                                   android:fontFamily="@font/plus_jakarta_sans_family"
+                                   android:includeFontPadding="false"
+                                   android:inputType="text"
+                                   android:singleLine="true"
+                                   android:gravity="start|center_vertical"
+                                   android:paddingStart="8dp"
+                                   android:paddingTop="0dp"
+                                   android:paddingBottom="0dp" />
+
+                           </LinearLayout>
+
+                       </LinearLayout>
+
+                   </LinearLayout>
+
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp"
+            android:layout_marginTop="2dp">
+
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
+
+                
+                <TextView
+                    android:id="@+id/textViewPopularNearYou"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Popular near you"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/plus_jakarta_sans_family"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginEnd="12dp" />
+
+                
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/tab_group_background"
+                    android:padding="3dp"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:id="@+id/buttonAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/black"
+                        android:fontFamily="@font/plus_jakarta_sans_family"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:background="@drawable/tab_selected_background"
+                        android:stateListAnimator="@null"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/buttonHome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Home"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/white"
+                        android:fontFamily="@font/plus_jakarta_sans_family"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:background="@drawable/tab_unselected_background"
+                        android:stateListAnimator="@null"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/buttonOutdoor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Outdoor"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/white"
+                        android:fontFamily="@font/plus_jakarta_sans_family"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:gravity="center"
+                        android:background="@drawable/tab_unselected_background"
+                        android:stateListAnimator="@null"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewServices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:scrollbars="vertical"
+                android:paddingBottom="80dp"
+                tools:listitem="@layout/item_service" />
+
+        </LinearLayout> 
+    </LinearLayout> 
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

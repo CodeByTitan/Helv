@@ -105,31 +105,32 @@ class AuthCardView @JvmOverloads constructor(
     fun adjustHeightForContent() {
         if (!isExpanded) return
         
-        post {
-            val screenWidth = resources.displayMetrics.widthPixels
-            val targetWidth = screenWidth - (24.dpToPx() * 2)
-            
-            binding.expandedContent.measure(
-                View.MeasureSpec.makeMeasureSpec(targetWidth, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            )
-            val newContentHeight = binding.expandedContent.measuredHeight
-            
-            val currentHeight = height
-            val newHeight = binding.buttonText.measuredHeight + (20.dpToPx() * 2) + newContentHeight
-            
-            if (newHeight != currentHeight) {
-                val heightAnimator = ValueAnimator.ofInt(currentHeight, newHeight)
-                heightAnimator.addUpdateListener { animation ->
-                    val value = animation.animatedValue as Int
-                    val params = layoutParams
-                    params.height = value
-                    layoutParams = params
-                }
-                heightAnimator.duration = 200
-                heightAnimator.interpolator = DecelerateInterpolator()
-                heightAnimator.start()
+        binding.expandedContent.requestLayout()
+        binding.expandedContent.forceLayout()
+        
+        val screenWidth = resources.displayMetrics.widthPixels
+        val targetWidth = screenWidth - (24.dpToPx() * 2)
+        
+        binding.expandedContent.measure(
+            View.MeasureSpec.makeMeasureSpec(targetWidth, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        val newContentHeight = binding.expandedContent.measuredHeight
+        
+        val currentHeight = height
+        val newHeight = binding.buttonText.measuredHeight + (20.dpToPx() * 2) + newContentHeight + 40.dpToPx()
+        
+        if (newHeight != currentHeight) {
+            val heightAnimator = ValueAnimator.ofInt(currentHeight, newHeight)
+            heightAnimator.addUpdateListener { animation ->
+                val value = animation.animatedValue as Int
+                val params = layoutParams
+                params.height = value
+                layoutParams = params
             }
+            heightAnimator.duration = 200
+            heightAnimator.interpolator = DecelerateInterpolator()
+            heightAnimator.start()
         }
     }
     

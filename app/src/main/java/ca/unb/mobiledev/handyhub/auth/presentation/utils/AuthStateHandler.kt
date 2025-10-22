@@ -78,8 +78,9 @@ class AuthStateHandler(
         
     }
     
-    fun getToggleText(): String {
+    fun getToggleText(timerSeconds: Int = 0): String {
         return when {
+            state.isOtpMode && timerSeconds > 0 -> "Resend OTP in ${timerSeconds}s"
             state.isOtpMode -> "Resend OTP"
             state.isLoginMode -> "Don't have an account?"
             else -> "Already have an account?"
@@ -90,8 +91,9 @@ class AuthStateHandler(
         return if (state.isEmailMode) "Having trouble signing in?" else "Use email instead"
     }
     
-    fun getTitleText(cardTitle: String): String {
+    fun getTitleText(cardTitle: String, isReturningUser: Boolean = false): String {
         return when {
+            state.isOtpMode && isReturningUser -> "Welcome Back Homie"
             state.isOtpMode -> "Verify OTP"
             state.isLoginMode && isGetStartedCard -> "Get Back In"
             state.isLoginMode && !isGetStartedCard -> "Welcome Back."
@@ -99,7 +101,7 @@ class AuthStateHandler(
         }
     }
     
-    fun getSubtitleText(defaultSubtitle: String, phoneNumber: String = ""): String {
+    fun getSubtitleText(defaultSubtitle: String, phoneNumber: String = "", isReturningUser: Boolean = false): String {
         return when {
             state.isOtpMode && phoneNumber.isNotEmpty() -> 
                 "We have sent you a private pin on the phone number $phoneNumber"

@@ -21,8 +21,6 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<Resource<User>>(Resource.Loading())
     val authState: StateFlow<Resource<User>> = _authState.asStateFlow()
 
-    private val _signOutState = MutableStateFlow<Resource<Unit>>(Resource.Success(Unit))
-    val signOutState: StateFlow<Resource<Unit>> = _signOutState.asStateFlow()
 
     private val _onboardingStatus = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
     val onboardingStatus: StateFlow<Resource<Boolean>> = _onboardingStatus.asStateFlow()
@@ -33,13 +31,17 @@ class AuthViewModel @Inject constructor(
     private val _emailCheckState = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
     val emailCheckState: StateFlow<Resource<Boolean>> = _emailCheckState.asStateFlow()
     
+    private val _phoneCheckState = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
+    val phoneCheckState: StateFlow<Resource<Boolean>> = _phoneCheckState.asStateFlow()
+    
     data class AuthFlowState(
         val isGetStartedCard: Boolean = true,
         val isLoginMode: Boolean = false,
         val isEmailMode: Boolean = false,
         val isOtpMode: Boolean = false,
         val phoneNumber: String = "",
-        val email: String = ""
+        val email: String = "",
+        val isReturningUser: Boolean = false
     )
     
     private val _getStartedState = MutableStateFlow(AuthFlowState(isGetStartedCard = true))
@@ -48,25 +50,8 @@ class AuthViewModel @Inject constructor(
     private val _joinUsState = MutableStateFlow(AuthFlowState(isGetStartedCard = false))
     val joinUsState: StateFlow<AuthFlowState> = _joinUsState.asStateFlow()
     
-    private val _currentUserState = MutableStateFlow<Resource<User?>>(Resource.Loading())
-    val currentUserState: StateFlow<Resource<User?>> = _currentUserState.asStateFlow()
     
 
-    fun createUser(name: String, email: String, phone: String, dob: String, password: String) {
-        viewModelScope.launch {
-            authRepository.createUser(name, email, phone, dob, password).collect {
-                _authState.value = it
-            }
-        }
-    }
-
-    fun signInWithEmail(email: String, password: String) {
-        viewModelScope.launch {
-            authRepository.signInWithEmail(email, password).collect {
-                _authState.value = it
-            }
-        }
-    }
 
     fun sendOtp(phone: String, activity: Activity) {
         viewModelScope.launch {
@@ -84,14 +69,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signOut() {
-        viewModelScope.launch {
-            authRepository.signOut().collect {
-                _signOutState.value = it
-            }
-        }
-    }
-
     fun checkOnboardingStatus() {
         viewModelScope.launch {
             authRepository.checkOnboardingStatus().collect {
@@ -100,18 +77,18 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun getCurrentUser() {
-        viewModelScope.launch {
-            authRepository.getCurrentUser().collect { resource ->
-                _currentUserState.value = resource
-            }
-        }
-    }
-    
     fun checkEmailExists(email: String) {
         viewModelScope.launch {
             authRepository.checkEmailExists(email).collect { resource ->
                 _emailCheckState.value = resource
+            }
+        }
+    }
+    
+    fun checkPhoneExists(phone: String) {
+        viewModelScope.launch {
+            authRepository.checkPhoneExists(phone).collect { resource ->
+                _phoneCheckState.value = resource
             }
         }
     }
@@ -135,12 +112,38 @@ class AuthViewModel @Inject constructor(
     private val _updateDetailsState = MutableStateFlow<Resource<Unit>>(Resource.Success(Unit))
     val updateDetailsState: StateFlow<Resource<Unit>> = _updateDetailsState.asStateFlow()
     
+    private val _otpResendTimer = MutableStateFlow(0)
+    val otpResendTimer: StateFlow<Int> = _otpResendTimer.asStateFlow()
+    
+    private var timerJob: kotlinx.coroutines.Job? = null
+    
+    fun startOtpResendTimer() {
+        timerJob?.cancel()
+        _otpResendTimer.value = 60
+        
+        timerJob = viewModelScope.launch {
+            while (_otpResendTimer.value > 0) {
+                kotlinx.coroutines.delay(1000)
+                _otpResendTimer.value = _otpResendTimer.value - 1
+            }
+        }
+    }
+    
+    fun canResendOtp(): Boolean {
+        return _otpResendTimer.value == 0
+    }
+    
     fun updateUserDetailsAndCompleteOnboarding(name: String, email: String, dob: String) {
         viewModelScope.launch {
             authRepository.updateUserDetailsAndCompleteOnboarding(name, email, dob).collect { resource ->
                 _updateDetailsState.value = resource
             }
         }
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        timerJob?.cancel()
     }
 }
 

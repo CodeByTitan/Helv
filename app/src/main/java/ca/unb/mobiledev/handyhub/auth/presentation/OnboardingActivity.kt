@@ -13,6 +13,7 @@ import ca.unb.mobiledev.handyhub.auth.domain.viewmodel.AuthViewModel
 import ca.unb.mobiledev.handyhub.databinding.ActivityOnboardingBinding
 import ca.unb.mobiledev.handyhub.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -20,7 +21,9 @@ class OnboardingActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityOnboardingBinding
     private val authViewModel: AuthViewModel by viewModels()
-    private var hasCheckedStatus = false
+    private var hasCheckedInitialStatus = false
+    private var authStateJob: Job? = null
+    private var updateDetailsJob: Job? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +32,15 @@ class OnboardingActivity : AppCompatActivity() {
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        checkOnboardingStatusOnce()
+        checkInitialOnboardingStatus()
+        observeAuthenticationChanges()
+        observeDetailsUpdate()
     }
     
-    private fun checkOnboardingStatusOnce() {
-        if (hasCheckedStatus) return
+    private fun checkInitialOnboardingStatus() {
+        if (hasCheckedInitialStatus) return
         
-        hasCheckedStatus = true
+        hasCheckedInitialStatus = true
         authViewModel.checkOnboardingStatus()
         
         lifecycleScope.launch {
@@ -48,10 +53,9 @@ class OnboardingActivity : AppCompatActivity() {
                         } else {
                             navigateToDetailsFragment()
                         }
-                        return@collect
                     }
                     is Resource.Error -> {
-                        return@collect
+                        // User not logged in - stay on SignUpFragment (do nothing)
                     }
                     is Resource.Loading -> {}
                 }
@@ -59,7 +63,60 @@ class OnboardingActivity : AppCompatActivity() {
         }
     }
     
-    fun navigateToMainActivity() {
+    private fun observeAuthenticationChanges() {
+        authStateJob = lifecycleScope.launch {
+            var isFirstEmission = true
+            authViewModel.authState.collect { resource ->
+                // Skip the first emission (initial Loading state)
+                if (isFirstEmission) {
+                    isFirstEmission = false
+                    if (resource is Resource.Loading) {
+                        return@collect
+                    }
+                }
+                
+                when (resource) {
+                    is Resource.Success -> {
+                        val user = resource.data
+                        if (user != null) {
+                            if (user.onboardingCompleted) {
+                                navigateToMainActivity()
+                            } else {
+                                navigateToDetailsFragment()
+                            }
+                        }
+                    }
+                    is Resource.Error -> {}
+                    is Resource.Loading -> {}
+                }
+            }
+        }
+    }
+    
+    private fun observeDetailsUpdate() {
+        updateDetailsJob = lifecycleScope.launch {
+            var isFirstEmission = true
+            authViewModel.updateDetailsState.collect { resource ->
+                // Skip the first emission (initial Success(Unit) state)
+                if (isFirstEmission) {
+                    isFirstEmission = false
+                    if (resource is Resource.Success) {
+                        return@collect
+                    }
+                }
+                
+                when (resource) {
+                    is Resource.Success -> {
+                        navigateToMainActivity()
+                    }
+                    is Resource.Error -> {}
+                    is Resource.Loading -> {}
+                }
+            }
+        }
+    }
+    
+    private fun navigateToMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
@@ -77,5 +134,11 @@ class OnboardingActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        authStateJob?.cancel()
+        updateDetailsJob?.cancel()
     }
 }

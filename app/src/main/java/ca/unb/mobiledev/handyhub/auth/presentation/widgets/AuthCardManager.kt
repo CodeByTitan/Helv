@@ -52,13 +52,15 @@ class AuthCardManager(
     
     private fun handleToggleClick() {
         val state = if (isGetStarted) authViewModel.getStartedState.value else authViewModel.joinUsState.value
-        
+
         if (state.isOtpMode) {
-            resendOtp()
+            if (authViewModel.canResendOtp()) {
+                resendOtp()
+            }
         } else {
             val wasInLoginMode = state.isLoginMode
             handler.toggleLoginMode()
-            
+
             if (wasInLoginMode && state.isEmailMode) {
                 handler.toggleEmailMode()
                 content.emailInput.text?.clear()
@@ -96,7 +98,17 @@ class AuthCardManager(
             return
         }
         
-        sendOtp(AuthInputValidator.formatPhoneNumber(phone))
+        val formattedPhone = AuthInputValidator.formatPhoneNumber(phone)
+        
+        if (isGetStarted) {
+            authViewModel.updateGetStartedState { it.copy(phoneNumber = formattedPhone) }
+        } else {
+            authViewModel.updateJoinUsState { it.copy(phoneNumber = formattedPhone) }
+        }
+        
+        content.phoneInputLayout.helperText = "Checking phone number..."
+        content.buttonContinue.isEnabled = false
+        authViewModel.checkPhoneExists(formattedPhone)
     }
     
     private fun handleEmailContinue() {
@@ -114,14 +126,22 @@ class AuthCardManager(
         authViewModel.checkEmailExists(email)
     }
     
-    private fun sendOtp(phoneNumber: String) {
+    private fun sendOtp(phoneNumber: String, isReturningUser: Boolean) {
         handler.enterOtpMode(phoneNumber)
+        
+        if (isGetStarted) {
+            authViewModel.updateGetStartedState { it.copy(isReturningUser = isReturningUser) }
+        } else {
+            authViewModel.updateJoinUsState { it.copy(isReturningUser = isReturningUser) }
+        }
+        
         authViewModel.sendOtp(phoneNumber, fragment.requireActivity())
     }
     
     private fun resendOtp() {
         val state = if (isGetStarted) authViewModel.getStartedState.value else authViewModel.joinUsState.value
-        sendOtp(state.phoneNumber)
+        sendOtp(state.phoneNumber, state.isReturningUser)
+        authViewModel.startOtpResendTimer()
     }
     
     private fun verifyOtp() {
@@ -136,16 +156,26 @@ class AuthCardManager(
         authViewModel.signInWithPhone(state.phoneNumber, otp)
     }
     
-    fun updateUI(state: AuthViewModel.AuthFlowState, card: AuthCardView, defaultTitle: String, defaultSubtitle: String) {
-        card.setExpandedTitle(handler.getTitleText(defaultTitle))
-        card.setSubtitle(handler.getSubtitleText(defaultSubtitle, state.phoneNumber))
+    fun updateUI(state: AuthViewModel.AuthFlowState, card: AuthCardView, defaultTitle: String, defaultSubtitle: String, timerSeconds: Int = 0) {
+        card.setExpandedTitle(handler.getTitleText(defaultTitle, state.isReturningUser))
+        card.setSubtitle(handler.getSubtitleText(defaultSubtitle, state.phoneNumber, state.isReturningUser))
         
-        content.toggleText.text = handler.getToggleText()
+        content.toggleText.text = handler.getToggleText(timerSeconds)
         content.useEmailToggle.text = handler.getEmailToggleText()
+        
+        if (state.isOtpMode) {
+            content.toggleText.isEnabled = timerSeconds == 0
+            content.toggleText.alpha = if (timerSeconds == 0) 1.0f else 0.5f
+        } else {
+            content.toggleText.isEnabled = true
+            content.toggleText.alpha = 1.0f
+        }
         
         handler.updateInputVisibility(content.phoneInputLayout, content.emailInputLayout, content.otpInputLayout, content.useEmailToggle, content.toggleText)
         
-        card.adjustHeightForContent()
+        card.post {
+            card.adjustHeightForContent()
+        }
     }
     
     private fun showToast(message: String) {

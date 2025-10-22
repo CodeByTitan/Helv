@@ -33,7 +33,16 @@ class AuthFlowObserver(
             val defaultTitle = if (isGetStarted) "Start getting help" else "Join the Community of Helpers"
             
             flow.collect { state ->
-                manager.updateUI(state, card, defaultTitle, "Connect with local service providers")
+                val timerSeconds = authViewModel.otpResendTimer.value
+                manager.updateUI(state, card, defaultTitle, "Connect with local service providers", timerSeconds)
+            }
+        }
+        
+        fragment.viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.otpResendTimer.collect { timerSeconds ->
+                val state = if (isGetStarted) authViewModel.getStartedState.value else authViewModel.joinUsState.value
+                val defaultTitle = if (isGetStarted) "Start getting help" else "Join the Community of Helpers"
+                manager.updateUI(state, card, defaultTitle, "Connect with local service providers", timerSeconds)
             }
         }
     }
@@ -55,7 +64,7 @@ class AuthFlowObserver(
             authViewModel.authState.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        showToast("Authentication successful")
+                        // Navigation is handled by OnboardingActivity
                     }
                     is Resource.Error -> showToast(resource.message ?: "Authentication failed")
                     is Resource.Loading -> {}
@@ -108,6 +117,80 @@ class AuthFlowObserver(
                         joinUsEmailLayout.error = "Error checking email"
                         getStartedProgress.visibility = android.view.View.GONE
                         joinUsProgress.visibility = android.view.View.GONE
+                        getStartedButton.isEnabled = true
+                        joinUsButton.isEnabled = true
+                    }
+                    is Resource.Loading -> {}
+                }
+            }
+        }
+    }
+    
+    fun handlePhoneCheckResult(
+        getStartedContent: ca.unb.mobiledev.handyhub.databinding.ContentAuthCardBinding,
+        joinUsContent: ca.unb.mobiledev.handyhub.databinding.ContentAuthCardBinding
+    ) {
+        fragment.viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.phoneCheckState.collect { resource ->
+                val getStartedState = authViewModel.getStartedState.value
+                val joinUsState = authViewModel.joinUsState.value
+                val getStartedPhoneLayout = getStartedContent.phoneInputLayout
+                val joinUsPhoneLayout = joinUsContent.phoneInputLayout
+                val getStartedButton = getStartedContent.buttonContinue
+                val joinUsButton = joinUsContent.buttonContinue
+                
+                when (resource) {
+                    is Resource.Success -> {
+                        getStartedPhoneLayout.helperText = ""
+                        joinUsPhoneLayout.helperText = ""
+                        getStartedButton.isEnabled = true
+                        joinUsButton.isEnabled = true
+                        
+                        val phoneExists = resource.data == true
+                        
+                        if (getStartedState.phoneNumber.isNotEmpty() && !getStartedState.isEmailMode) {
+                            if (getStartedState.isLoginMode) {
+                                if (phoneExists) {
+                                    authViewModel.sendOtp(getStartedState.phoneNumber, fragment.requireActivity())
+                                    authViewModel.updateGetStartedState { it.copy(isOtpMode = true, isReturningUser = true) }
+                                } else {
+                                    getStartedPhoneLayout.error = "Phone number not found"
+                                }
+                            } else {
+                                if (phoneExists) {
+                                    authViewModel.sendOtp(getStartedState.phoneNumber, fragment.requireActivity())
+                                    authViewModel.updateGetStartedState { it.copy(isOtpMode = true, isReturningUser = true) }
+                                } else {
+                                    authViewModel.sendOtp(getStartedState.phoneNumber, fragment.requireActivity())
+                                    authViewModel.updateGetStartedState { it.copy(isOtpMode = true, isReturningUser = false) }
+                                }
+                            }
+                        }
+                        
+                        if (joinUsState.phoneNumber.isNotEmpty() && !joinUsState.isEmailMode) {
+                            if (joinUsState.isLoginMode) {
+                                if (phoneExists) {
+                                    authViewModel.sendOtp(joinUsState.phoneNumber, fragment.requireActivity())
+                                    authViewModel.updateJoinUsState { it.copy(isOtpMode = true, isReturningUser = true) }
+                                } else {
+                                    joinUsPhoneLayout.error = "Phone number not found"
+                                }
+                            } else {
+                                if (phoneExists) {
+                                    authViewModel.sendOtp(joinUsState.phoneNumber, fragment.requireActivity())
+                                    authViewModel.updateJoinUsState { it.copy(isOtpMode = true, isReturningUser = true) }
+                                } else {
+                                    authViewModel.sendOtp(joinUsState.phoneNumber, fragment.requireActivity())
+                                    authViewModel.updateJoinUsState { it.copy(isOtpMode = true, isReturningUser = false) }
+                                }
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        getStartedPhoneLayout.helperText = ""
+                        joinUsPhoneLayout.helperText = ""
+                        getStartedPhoneLayout.error = "Error checking phone"
+                        joinUsPhoneLayout.error = "Error checking phone"
                         getStartedButton.isEnabled = true
                         joinUsButton.isEnabled = true
                     }

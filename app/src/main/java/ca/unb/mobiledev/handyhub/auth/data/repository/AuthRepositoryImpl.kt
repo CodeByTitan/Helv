@@ -31,78 +31,6 @@ class AuthRepositoryImpl @Inject constructor(
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     
 
-    override fun getCurrentUser(): Flow<Resource<User?>> = flow {
-        emit(Resource.Loading())
-        try {
-            val firebaseUser = auth.currentUser
-            if (firebaseUser == null) {
-                emit(Resource.Success(null))
-                return@flow
-            }
-            
-            val doc = firestore.collection("users").document(firebaseUser.uid).get().await()
-            
-            if (doc.exists()) {
-                val onboardingStatus = doc.getString("onboarding_status") ?: "ongoing"
-                
-                val user = User(
-                    uid = firebaseUser.uid,
-                    name = doc.getString("name"),
-                    email = doc.getString("email"),
-                    phone = doc.getString("phone"),
-                    onboardingCompleted = onboardingStatus == "complete"
-                )
-                emit(Resource.Success(user))
-            } else {
-                emit(Resource.Success(null))
-            }
-        } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Failed to get current user"))
-        }
-    }
-
-    override fun createUser(name: String, email: String, phone: String, dob: String, password: String): Flow<Resource<User>> = flow {
-        emit(Resource.Loading())
-        try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val uid = result.user?.uid ?: throw Exception("User creation failed")
-            
-            val userData = hashMapOf(
-                "name" to name,
-                "email" to email,
-                "phone" to phone,
-                "dob" to dob,
-                "onboarding_status" to "complete"
-            )
-            firestore.collection("users").document(uid).set(userData).await()
-            
-            val user = User(uid, name, email, phone, true)
-            emit(Resource.Success(user))
-        } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Failed to create user"))
-        }
-    }
-
-    override fun signInWithEmail(email: String, password: String): Flow<Resource<User>> = flow {
-        emit(Resource.Loading())
-        try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            val uid = result.user?.uid ?: throw Exception("Login failed")
-            
-            val doc = firestore.collection("users").document(uid).get().await()
-            val onboardingStatus = doc.getString("onboarding_status") ?: "ongoing"
-            val user = User(
-                uid = uid,
-                name = doc.getString("name"),
-                email = doc.getString("email"),
-                phone = doc.getString("phone"),
-                onboardingCompleted = onboardingStatus == "complete"
-            )
-            emit(Resource.Success(user))
-        } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Login failed"))
-        }
-    }
 
     override fun sendOtp(phone: String, activity: Activity): Flow<Resource<String>> = callbackFlow {
         trySend(Resource.Loading())
@@ -200,15 +128,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun signOut(): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
-        try {
-            auth.signOut()
-            emit(Resource.Success(Unit))
-        } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Sign out failed"))
-        }
-    }
 
     override fun checkOnboardingStatus(): Flow<Resource<Boolean>> = flow {
         emit(Resource.Loading())
@@ -239,6 +158,21 @@ class AuthRepositoryImpl @Inject constructor(
             emit(Resource.Success(exists))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Failed to check email"))
+        }
+    }
+    
+    override fun checkPhoneExists(phone: String): Flow<Resource<Boolean>> = flow {
+        emit(Resource.Loading())
+        try {
+            val querySnapshot = firestore.collection("users")
+                .whereEqualTo("phone", phone)
+                .get()
+                .await()
+            
+            val exists = !querySnapshot.isEmpty
+            emit(Resource.Success(exists))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to check phone"))
         }
     }
     

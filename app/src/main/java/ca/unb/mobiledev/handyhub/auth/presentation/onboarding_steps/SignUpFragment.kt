@@ -145,11 +145,16 @@ class SignUpFragment : Fragment() {
             getStartedManager.getContent(),
             joinUsManager.getContent()
         )
+        
+        flowObserver.handlePhoneCheckResult(
+            getStartedManager.getContent(),
+            joinUsManager.getContent()
+        )
     }
     
     private fun setupSkipButton() {
         binding.buttonSkip.setOnClickListener {
-            (requireActivity() as? OnboardingActivity)?.navigateToMainActivity()
+            // Skip functionality removed - user must complete authentication
         }
     }
     

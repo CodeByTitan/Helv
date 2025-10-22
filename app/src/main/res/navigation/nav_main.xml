@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.HomeFragment"
+        android:label="Services" />
+
+    <fragment
+        android:id="@+id/jobsFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.JobsFragment"
+        android:label="Jobs" />
+
+    <fragment
+        android:id="@+id/messagesFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.MessagesFragment"
+        android:label="Messages" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.ProfileFragment"
+        android:label="Profile" />
+
+</navigation>
+

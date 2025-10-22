@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="16dp">
+    android:paddingBottom="24dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phoneInputLayout"
@@ -82,8 +82,9 @@
         android:visibility="gone"
         android:textColorHint="#CCCCCC"
         app:boxBackgroundMode="outline"
-        app:boxStrokeColor="@android:color/white"
+        app:boxStrokeColor="@color/otp_input_stroke"
         app:boxStrokeWidth="2dp"
+        app:boxStrokeWidthFocused="2dp"
         app:boxCornerRadiusTopStart="26dp"
         app:boxCornerRadiusTopEnd="26dp"
         app:boxCornerRadiusBottomStart="26dp"
