@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phoneInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#CCCCCC"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="@color/phone_input_stroke"
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxCornerRadiusTopStart="26dp"
+        app:boxCornerRadiusTopEnd="26dp"
+        app:boxCornerRadiusBottomStart="26dp"
+        app:boxCornerRadiusBottomEnd="26dp"
+        app:startIconDrawable="@android:drawable/ic_menu_call"
+        app:startIconTint="@android:color/white"
+        app:prefixText="+1 "
+        app:prefixTextColor="@android:color/white"
+        app:hintTextColor="@color/orange_500"
+        app:boxBackgroundColor="@android:color/transparent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phoneInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:textColor="@android:color/white"
+            android:textColorHint="#CCCCCC"
+            android:fontFamily="@font/plus_jakarta_sans_family" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textColorHint="#CCCCCC"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@android:color/white"
+        app:boxStrokeWidth="2dp"
+        app:boxCornerRadiusTopStart="26dp"
+        app:boxCornerRadiusTopEnd="26dp"
+        app:boxCornerRadiusBottomStart="26dp"
+        app:boxCornerRadiusBottomEnd="26dp"
+        app:startIconDrawable="@android:drawable/ic_dialog_email"
+        app:startIconTint="@android:color/white"
+        app:helperTextTextColor="@color/orange_500"
+        app:helperTextEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email Address"
+            android:inputType="textEmailAddress"
+            android:textColor="@android:color/white"
+            android:textColorHint="#CCCCCC"
+            android:fontFamily="@font/plus_jakarta_sans_family" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/emailCheckProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminate="true"
+        app:indicatorColor="@color/orange_500"
+        app:trackColor="#40FFFFFF" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/otpInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textColorHint="#CCCCCC"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@android:color/white"
+        app:boxStrokeWidth="2dp"
+        app:boxCornerRadiusTopStart="26dp"
+        app:boxCornerRadiusTopEnd="26dp"
+        app:boxCornerRadiusBottomStart="26dp"
+        app:boxCornerRadiusBottomEnd="26dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/otpInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter OTP"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textColor="@android:color/white"
+            android:textColorHint="#CCCCCC"
+            android:fontFamily="@font/plus_jakarta_sans_family" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonContinue"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="24dp"
+        android:text="Continue"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:backgroundTint="@android:color/white"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        app:cornerRadius="26dp" />
+
+    <TextView
+        android:id="@+id/useEmailToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:text="Use email instead"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/toggleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="4dp"
+        android:text="Already have an account?"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:padding="8dp" />
+</LinearLayout>

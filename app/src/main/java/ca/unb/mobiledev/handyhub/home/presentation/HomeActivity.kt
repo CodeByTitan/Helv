@@ -2,6 +2,7 @@ package ca.unb.mobiledev.handyhub.home.presentation
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -244,6 +245,7 @@ class HomeActivity : AppCompatActivity() {
         setupNavigationItem(binding.navProfile, R.drawable.user, "Profile", false)
     }
     
+    @SuppressLint("SuspiciousIndentation")
     private fun setupNavigationItem(
         navItemBinding: ca.unb.mobiledev.handyhub.databinding.NavItemBinding,
         iconRes: Int,

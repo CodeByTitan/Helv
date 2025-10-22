@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Service Image -->
+        
         <ImageView
             android:id="@+id/imageViewService"
             android:layout_width="match_parent"
@@ -21,14 +21,14 @@
             android:src="@drawable/ic_launcher_foreground"
             android:background="#FFE0E0E0" />
 
-        <!-- Black Tint Overlay -->
+        
         <View
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_gravity="bottom"
             android:background="@drawable/gradient_overlay" />
 
-        <!-- Service Name Over Image -->
+        
         <TextView
             android:id="@+id/textViewServiceName"
             android:layout_width="match_parent"

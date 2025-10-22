@@ -18,14 +18,14 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-                   <!-- Top Header Section -->
+                   
                    <LinearLayout
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
                        android:orientation="vertical"
                        android:layout_marginBottom="24dp">
 
-                       <!-- Top Row: Greeting and Location Icon -->
+                       
                        <LinearLayout
                            android:layout_width="match_parent"
                            android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                            android:layout_marginBottom="16dp"
                            android:gravity="center_vertical">
 
-                           <!-- Left: Greeting (single line) -->
+                           
                            <LinearLayout
                                android:id="@+id/greetingContainer"
                                android:layout_width="0dp"
@@ -55,7 +55,7 @@
 
                            </LinearLayout>
 
-                           <!-- Right: Location Icon -->
+                           
                            <ImageView
                                android:id="@+id/locationIcon"
                                android:layout_width="24dp"
@@ -67,7 +67,7 @@
 
                        </LinearLayout>
 
-                       <!-- Search Bar with Stationary Icon -->
+                       
                        <LinearLayout
                            android:layout_width="match_parent"
                            android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                            android:layout_marginBottom="8dp"
                            android:gravity="center_vertical">
 
-                           <!-- Search Bar Container (with icon inside) -->
+                           
                            <LinearLayout
                                android:id="@+id/searchBarContainer"
                                android:layout_width="match_parent"
@@ -96,20 +96,22 @@
                                <EditText
                                    android:id="@+id/searchEditText"
                                    android:layout_width="0dp"
-                                   android:layout_height="wrap_content"
+                                   android:layout_height="match_parent"
                                    android:layout_weight="1"
+                                   android:layout_marginTop="-2dp"
                                    android:hint="Explore our services"
                                    android:background="@null"
                                    android:textSize="14sp"
                                    android:textColor="#FF000000"
                                    android:textColorHint="#FF9C9C9C"
                                    android:fontFamily="@font/plus_jakarta_sans_family"
+                                   android:includeFontPadding="false"
                                    android:inputType="text"
                                    android:singleLine="true"
                                    android:gravity="start|center_vertical"
                                    android:paddingStart="8dp"
-                                   android:paddingTop="4dp"
-                                   android:paddingBottom="4dp" />
+                                   android:paddingTop="0dp"
+                                   android:paddingBottom="0dp" />
 
                            </LinearLayout>
 
@@ -117,7 +119,7 @@
 
                    </LinearLayout>
 
-        <!-- Popular near you Section -->
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,7 +127,7 @@
             android:layout_marginBottom="24dp"
             android:layout_marginTop="2dp">
 
-            <!-- Section Title with Tab Group -->
+            
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,7 +135,7 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="20dp">
 
-                <!-- Title -->
+                
                 <TextView
                     android:id="@+id/textViewPopularNearYou"
                     android:layout_width="0dp"
@@ -148,7 +150,7 @@
                     android:ellipsize="end"
                     android:layout_marginEnd="12dp" />
 
-                <!-- Tab Group -->
+                
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -209,7 +211,7 @@
 
             </LinearLayout>
 
-            <!-- Services Grid -->
+            
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewServices"
                 android:layout_width="match_parent"
@@ -219,11 +221,11 @@
                 android:paddingBottom="80dp"
                 tools:listitem="@layout/item_service" />
 
-        </LinearLayout> <!-- Closes LinearLayout from line 121 (Popular near you Section) -->
-    </LinearLayout> <!-- NEW LINE: Closes LinearLayout from line 15 (main scrollable content) -->
+        </LinearLayout> 
+    </LinearLayout> 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Bottom Navigation Bar -->
+    
     <LinearLayout
         android:id="@+id/bottomNavigationContainer"
         android:layout_width="match_parent"
@@ -235,7 +237,7 @@
         android:layout_margin="16dp"
         android:layout_gravity="bottom">
 
-        <!-- Home Navigation Item -->
+        
         <include
             android:id="@+id/navHome"
             layout="@layout/nav_item"
@@ -243,7 +245,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <!-- Services Navigation Item -->
+        
         <include
             android:id="@+id/navServices"
             layout="@layout/nav_item"
@@ -251,7 +253,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <!-- Messages Navigation Item -->
+        
         <include
             android:id="@+id/navMessages"
             layout="@layout/nav_item"
@@ -259,7 +261,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <!-- Profile Navigation Item -->
+        
         <include
             android:id="@+id/navProfile"
             layout="@layout/nav_item"

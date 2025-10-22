@@ -89,7 +89,7 @@ class GreetingAnimator {
 
                 // Animate the reveal fraction from 0 -> 1
                 val reveal = ValueAnimator.ofFloat(0f, 1f).apply {
-                    duration = 650
+                    duration = 900
                     interpolator = DecelerateInterpolator()
                     addUpdateListener { va ->
                         outlineProvider.fraction = va.animatedValue as Float
@@ -99,7 +99,7 @@ class GreetingAnimator {
 
                 // Subtle overall fade so it doesn't just "pop"
                 val fade = ObjectAnimator.ofFloat(searchBarContainer, View.ALPHA, 0f, 1f).apply {
-                    duration = 500
+                    duration = 800
                     startDelay = 100 // reveal starts, then opacity catches up
                     interpolator = DecelerateInterpolator()
                 }
@@ -107,7 +107,7 @@ class GreetingAnimator {
                 // Optional: small "from left" presence without scaling
                 // (comment out if you don't want the nudge)
                 val nudge = ObjectAnimator.ofFloat(searchBarContainer, View.TRANSLATION_X, -8f, 0f).apply {
-                    duration = 650
+                    duration = 900
                     interpolator = DecelerateInterpolator()
                 }
 

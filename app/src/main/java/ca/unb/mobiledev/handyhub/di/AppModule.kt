@@ -43,4 +43,9 @@ abstract class RepositoryModule {
     abstract fun bindServiceRepository(
         serviceRepositoryImpl: ServiceRepositoryImpl
     ): ServiceRepository
+
+    @Binds
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: ca.unb.mobiledev.handyhub.auth.data.repository.AuthRepositoryImpl
+    ): ca.unb.mobiledev.handyhub.auth.domain.repository.AuthRepository
 }
