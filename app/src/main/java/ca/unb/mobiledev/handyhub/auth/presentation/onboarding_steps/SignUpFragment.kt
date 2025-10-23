@@ -54,7 +54,6 @@ class SignUpFragment : Fragment() {
         loadLogo()
         setupSlogan()
         setupCards()
-        setupSkipButton()
     }
     
     private fun loadLogo() {
@@ -150,12 +149,6 @@ class SignUpFragment : Fragment() {
             getStartedManager.getContent(),
             joinUsManager.getContent()
         )
-    }
-    
-    private fun setupSkipButton() {
-        binding.buttonSkip.setOnClickListener {
-            // Skip functionality removed - user must complete authentication
-        }
     }
     
     override fun onDestroyView() {

@@ -1,7 +1,5 @@
 package ca.unb.mobiledev.handyhub.auth.presentation.onboarding_steps
 
-import android.app.DatePickerDialog
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,10 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import ca.unb.mobiledev.handyhub.auth.presentation.OnboardingActivity
 import ca.unb.mobiledev.handyhub.auth.domain.viewmodel.AuthViewModel
 import ca.unb.mobiledev.handyhub.auth.presentation.utils.AuthInputValidator
 import ca.unb.mobiledev.handyhub.databinding.FragmentDetailsBinding
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -71,37 +71,44 @@ class DetailsFragment : Fragment() {
     }
     
     private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR) - 15
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedCalendar = Calendar.getInstance()
-                selectedCalendar.set(selectedYear, selectedMonth, selectedDay)
-                
-                if (isAgeValid(selectedCalendar)) {
-                    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                    selectedDateOfBirth = dateFormat.format(selectedCalendar.time)
-                    binding.dobInput.setText(selectedDateOfBirth)
-                    binding.dobInputLayout.error = null
-                } else {
-                    binding.dobInput.setText("")
-                    binding.dobInputLayout.error = "You must be at least 15 years old"
-                }
-                updateContinueButtonState()
-            },
-            year,
-            month,
-            day
-        )
-        
+        // Set max date to 15 years ago (minimum age requirement)
         val minAgeCalendar = Calendar.getInstance()
         minAgeCalendar.add(Calendar.YEAR, -15)
-        datePickerDialog.datePicker.maxDate = minAgeCalendar.timeInMillis
-        datePickerDialog.show()
+        val maxDateInMillis = minAgeCalendar.timeInMillis
+        
+        // Set default selection to 15 years ago
+        val defaultCalendar = Calendar.getInstance()
+        defaultCalendar.add(Calendar.YEAR, -15)
+        val defaultSelection = defaultCalendar.timeInMillis
+        
+        // Create constraints to prevent selecting dates that would make user under 15
+        val constraintsBuilder = CalendarConstraints.Builder()
+            .setValidator(DateValidatorPointBackward.before(maxDateInMillis))
+        
+        // Build Material Date Picker with better year selection
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select Date of Birth")
+            .setSelection(defaultSelection)
+            .setCalendarConstraints(constraintsBuilder.build())
+            .build()
+        
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val selectedCalendar = Calendar.getInstance()
+            selectedCalendar.timeInMillis = selection
+            
+            if (isAgeValid(selectedCalendar)) {
+                val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                selectedDateOfBirth = dateFormat.format(selectedCalendar.time)
+                binding.dobInput.setText(selectedDateOfBirth)
+                binding.dobInputLayout.error = null
+            } else {
+                binding.dobInput.setText("")
+                binding.dobInputLayout.error = "You must be at least 15 years old"
+            }
+            updateContinueButtonState()
+        }
+        
+        datePicker.show(parentFragmentManager, "DATE_PICKER")
     }
     
     private fun isAgeValid(selectedDate: Calendar): Boolean {
