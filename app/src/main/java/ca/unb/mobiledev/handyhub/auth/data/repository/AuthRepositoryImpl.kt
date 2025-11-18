@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val sharedPreferencesManager: ca.unb.mobiledev.handyhub.util.SharedPreferencesManager
 ) : AuthRepository {
     
     private var storedVerificationId: String? = null
@@ -185,7 +186,6 @@ class AuthRepositoryImpl @Inject constructor(
                 return@flow
             }
             
-            
             val userUpdates = hashMapOf<String, Any>(
                 "name" to name,
                 "email" to email,
@@ -198,10 +198,61 @@ class AuthRepositoryImpl @Inject constructor(
                 .update(userUpdates)
                 .await()
             
+            sharedPreferencesManager.saveUserName(name)
+            sharedPreferencesManager.saveUserEmail(email)
+            sharedPreferencesManager.saveUserId(currentUser.uid)
+            
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Failed to update user details"))
         }
+    }
+    
+    override fun getCurrentUser(): Flow<Resource<User>> = flow {
+        emit(Resource.Loading())
+        try {
+            val firebaseUser = auth.currentUser
+            if (firebaseUser == null) {
+                emit(Resource.Error("No user logged in"))
+                return@flow
+            }
+            
+            val doc = firestore.collection("users").document(firebaseUser.uid).get().await()
+            if (doc.exists()) {
+                val userName = doc.getString("name")
+                val userEmail = doc.getString("email")
+                
+                if (userName != null) {
+                    sharedPreferencesManager.saveUserName(userName)
+                }
+                if (userEmail != null) {
+                    sharedPreferencesManager.saveUserEmail(userEmail)
+                }
+                sharedPreferencesManager.saveUserId(firebaseUser.uid)
+                
+                val user = User(
+                    uid = firebaseUser.uid,
+                    name = userName,
+                    email = userEmail,
+                    phone = doc.getString("phone"),
+                    onboardingCompleted = (doc.getString("onboarding_status") ?: "ongoing") == "complete"
+                )
+                emit(Resource.Success(user))
+            } else {
+                emit(Resource.Error("User document not found"))
+            }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to fetch user data"))
+        }
+    }
+    
+    override fun logout() {
+        auth.signOut()
+        sharedPreferencesManager.clearAllData()
+    }
+    
+    override fun getCachedUserName(): String? {
+        return sharedPreferencesManager.getUserName()
     }
 }
 

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="18dp"
+    android:paddingBottom="18dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/imageViewWorker"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:src="@drawable/ic_launcher_foreground" />
+
+    <LinearLayout
+        android:id="@+id/nameContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/imageViewWorker"
+        app:layout_constraintEnd_toStartOf="@id/textViewMessageTime"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textViewWorkerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Worker Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:fontFamily="@font/plus_jakarta_sans_family"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/textViewWorkerCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="• Category"
+            android:textSize="16sp"
+            android:textColor="#FF666666"
+            android:fontFamily="@font/plus_jakarta_sans_family"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginStart="6dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 min ago"
+        android:textSize="13sp"
+        android:textColor="#FF999999"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewLastMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Last message preview..."
+        android:textSize="15sp"
+        android:textColor="#FF666666"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintStart_toEndOf="@id/imageViewWorker"
+        app:layout_constraintEnd_toStartOf="@id/textViewUnreadCount"
+        app:layout_constraintTop_toBottomOf="@id/nameContainer"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewUnreadCount"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:text="3"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:gravity="center"
+        android:background="@drawable/unread_badge_background"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

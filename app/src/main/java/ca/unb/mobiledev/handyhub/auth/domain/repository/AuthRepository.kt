@@ -11,6 +11,9 @@ interface AuthRepository {
     fun checkEmailExists(email: String): Flow<Resource<Boolean>>
     fun checkPhoneExists(phone: String): Flow<Resource<Boolean>>
     fun updateUserDetailsAndCompleteOnboarding(name: String, email: String, dob: String): Flow<Resource<Unit>>
+    fun getCurrentUser(): Flow<Resource<User>>
+    fun logout()
+    fun getCachedUserName(): String?
 }
 
 

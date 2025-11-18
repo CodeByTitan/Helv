@@ -29,6 +29,10 @@ class HomeFragment : Fragment() {
     private lateinit var serviceAdapter: ServiceAdapter
     private val viewModel: HomeViewModel by viewModels()
     
+    companion object {
+        private var animationsShown = false
+    }
+    
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -39,8 +43,14 @@ class HomeFragment : Fragment() {
         
         setupRecyclerView()
         setupClickListeners()
-        animateGreeting()
-        animateSearchBar()
+        observeUserName()
+        
+        // Only run animations on first launch (after login/signup)
+        if (!animationsShown) {
+            animateGreeting()
+            animateSearchBar()
+            animationsShown = true
+        }
     }
     
     private fun setupRecyclerView() {
@@ -181,6 +191,16 @@ class HomeFragment : Fragment() {
 
     private fun animateSearchBar() {
         GreetingAnimator.animateSearchBarExpand(binding.searchBarContainer)
+    }
+    
+    private fun observeUserName() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.userName.collect { name ->
+                name?.let {
+                    binding.textGoodMorning.text = "Welcome, $it"
+                }
+            }
+        }
     }
     
     override fun onDestroyView() {

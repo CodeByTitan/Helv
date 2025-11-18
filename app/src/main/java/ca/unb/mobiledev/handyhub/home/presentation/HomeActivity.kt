@@ -50,6 +50,7 @@ class HomeActivity : AppCompatActivity() {
                setupRecyclerView()
                setupClickListeners()
                setupNavigation()
+               observeUserName()
                animateGreeting()
                animateSearchBar()
                animateBottomNavigation()
@@ -235,6 +236,16 @@ class HomeActivity : AppCompatActivity() {
 
     private fun animateBottomNavigation() {
         GreetingAnimator.animateBottomNavigationSlideUp(binding.bottomNavigationContainer)
+    }
+    
+    private fun observeUserName() {
+        lifecycleScope.launch {
+            viewModel.userName.collect { name ->
+                name?.let {
+                    binding.textGoodMorning.text = "Welcome, $it"
+                }
+            }
+        }
     }
     
     private fun setupNavigation() {

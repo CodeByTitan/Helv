@@ -17,12 +17,34 @@
     <fragment
         android:id="@+id/messagesFragment"
         android:name="ca.unb.mobiledev.handyhub.home.presentation.MessagesFragment"
-        android:label="Messages" />
+        android:label="Messages">
+        <action
+            android:id="@+id/action_messagesFragment_to_chatFragment"
+            app:destination="@id/chatFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="ca.unb.mobiledev.handyhub.home.presentation.ProfileFragment"
         android:label="Profile" />
 
-</navigation>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="ca.unb.mobiledev.handyhub.messages.presentation.ChatFragment"
+        android:label="Chat">
+        <argument
+            android:name="workerName"
+            app:argType="string" />
+        <argument
+            android:name="workerCategory"
+            app:argType="string" />
+        <argument
+            android:name="workerImageUrl"
+            app:argType="string" />
+    </fragment>
 
+</navigation>
