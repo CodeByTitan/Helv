@@ -11,15 +11,21 @@ import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import ca.unb.mobiledev.handyhub.R
 import ca.unb.mobiledev.handyhub.databinding.FragmentHomeBinding
 import ca.unb.mobiledev.handyhub.home.domain.viewmodel.HomeViewModel
+import ca.unb.mobiledev.handyhub.home.domain.viewmodel.SearchViewModel
+import ca.unb.mobiledev.handyhub.home.presentation.adapter.SearchResultAdapter
 import ca.unb.mobiledev.handyhub.home.presentation.adapter.ServiceAdapter
 import ca.unb.mobiledev.handyhub.home.presentation.anim.GreetingAnimator
 import ca.unb.mobiledev.handyhub.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import android.text.Editable
+import android.text.TextWatcher
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -27,7 +33,9 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var serviceAdapter: ServiceAdapter
+    private lateinit var searchResultAdapter: SearchResultAdapter
     private val viewModel: HomeViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels()
     
     companion object {
         private var animationsShown = false
@@ -42,8 +50,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         
         setupRecyclerView()
+        setupSearchRecyclerView()
         setupClickListeners()
+        setupSearchListener()
         observeUserName()
+        observeSearchResults()
         
         // Only run animations on first launch (after login/signup)
         if (!animationsShown) {
@@ -55,8 +66,13 @@ class HomeFragment : Fragment() {
     
     private fun setupRecyclerView() {
         serviceAdapter = ServiceAdapter { service ->
-            // Handle service click
-            // TODO: Navigate to service details
+            val bundle = Bundle().apply {
+                putString("serviceId", service.id)
+            }
+            findNavController().navigate(
+                R.id.action_homeFragment_to_servicePickerFragment,
+                bundle
+            )
         }
         
         binding.recyclerViewServices.apply {
@@ -77,6 +93,67 @@ class HomeFragment : Fragment() {
                     is Resource.Error -> {
                         // Handle error state
                         serviceAdapter.submitList(emptyList())
+                    }
+                }
+            }
+        }
+    }
+    
+    private fun setupSearchRecyclerView() {
+        searchResultAdapter = SearchResultAdapter { result ->
+            val bundle = Bundle().apply {
+                putString("serviceId", result.serviceId)
+            }
+            findNavController().navigate(
+                R.id.action_homeFragment_to_servicePickerFragment,
+                bundle
+            )
+            binding.searchEditText.text?.clear()
+            binding.recyclerViewSearchResults.visibility = View.GONE
+        }
+        
+        binding.recyclerViewSearchResults.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = searchResultAdapter
+        }
+    }
+    
+    private fun setupSearchListener() {
+        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s?.toString() ?: ""
+                if (query.isNotEmpty()) {
+                    searchViewModel.search(query)
+                } else {
+                    searchViewModel.clearSearch()
+                    binding.recyclerViewSearchResults.visibility = View.GONE
+                }
+            }
+            
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+    
+    private fun observeSearchResults() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            searchViewModel.searchResults.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        binding.recyclerViewSearchResults.visibility = View.VISIBLE
+                    }
+                    is Resource.Success -> {
+                        val results = resource.data ?: emptyList()
+                        if (results.isNotEmpty()) {
+                            binding.recyclerViewSearchResults.visibility = View.VISIBLE
+                            searchResultAdapter.submitList(results)
+                        } else {
+                            binding.recyclerViewSearchResults.visibility = View.GONE
+                        }
+                    }
+                    is Resource.Error -> {
+                        binding.recyclerViewSearchResults.visibility = View.GONE
                     }
                 }
             }

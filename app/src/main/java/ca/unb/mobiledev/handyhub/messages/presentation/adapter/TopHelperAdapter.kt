@@ -13,7 +13,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 
 class TopHelperAdapter(
-    private val onItemClick: (TopHelper) -> Unit
+    private val onItemClick: (TopHelper) -> Unit,
+    private val onMessageClick: (TopHelper) -> Unit
 ) : ListAdapter<TopHelper, TopHelperAdapter.TopHelperViewHolder>(TopHelperDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopHelperViewHolder {
@@ -62,11 +63,17 @@ class TopHelperAdapter(
                 
                 Glide.with(root.context)
                     .load(helper.imageUrl)
+                    .placeholder(R.drawable.worker)
+                    .error(R.drawable.worker)
                     .transform(CircleCrop())
                     .into(imageViewHelper)
                 
                 root.setOnClickListener {
                     onItemClick(helper)
+                }
+                
+                buttonMessage.setOnClickListener {
+                    onMessageClick(helper)
                 }
             }
         }

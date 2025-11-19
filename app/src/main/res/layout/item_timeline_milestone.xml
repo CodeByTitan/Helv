@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="12dp"
+    android:paddingEnd="16dp">
+
+    <ImageView
+        android:id="@+id/imageViewMilestone"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_launcher_foreground" />
+
+    <View
+        android:id="@+id/viewTimelineLine"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:background="#FFE0E0E0"
+        app:layout_constraintTop_toBottomOf="@id/imageViewMilestone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewMilestoneTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Service Order Accepted"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@id/imageViewMilestone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imageViewMilestone" />
+
+    <TextView
+        android:id="@+id/textViewMilestoneTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="2:30 PM"
+        android:textSize="14sp"
+        android:textColor="#FF666666"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@id/imageViewMilestone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewMilestoneTitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

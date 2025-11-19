@@ -1,9 +1,11 @@
 package ca.unb.mobiledev.handyhub.messages.presentation.adapter
 
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -79,28 +81,36 @@ class MessageAdapter(
         }
         
         private fun showActionMenu(view: View, conversation: Conversation, currentUserId: String) {
-            val popup = PopupMenu(view.context, view)
-            popup.menuInflater.inflate(R.menu.menu_message_actions, popup.menu)
+            val popupView = LayoutInflater.from(view.context).inflate(R.layout.popup_message_actions, null)
             
-            val muteItem = popup.menu.findItem(R.id.action_mute_chat)
+            val popupWindow = PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            )
+            
+            popupWindow.elevation = 10f
+            popupWindow.isOutsideTouchable = true
+            popupWindow.isFocusable = true
+            
+            val textViewMute = popupView.findViewById<TextView>(R.id.textViewMute)
+            val textViewDelete = popupView.findViewById<TextView>(R.id.textViewDelete)
+            
             val isMuted = conversation.isMuted[currentUserId] ?: false
-            muteItem.title = if (isMuted) "Unmute" else "Mute"
+            textViewMute.text = if (isMuted) "Unmute" else "Mute"
             
-            popup.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.action_mute_chat -> {
-                        onMuteChat(conversation)
-                        true
-                    }
-                    R.id.action_delete_chat -> {
-                        onDeleteChat(conversation)
-                        true
-                    }
-                    else -> false
-                }
+            textViewMute.setOnClickListener {
+                onMuteChat(conversation)
+                popupWindow.dismiss()
             }
             
-            popup.show()
+            textViewDelete.setOnClickListener {
+                onDeleteChat(conversation)
+                popupWindow.dismiss()
+            }
+            
+            popupWindow.showAsDropDown(view, 0, -view.height, Gravity.END)
         }
     }
 

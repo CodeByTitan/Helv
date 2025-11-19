@@ -31,6 +31,7 @@ class MessagesFragment : Fragment() {
     private val viewModel: MessagesViewModel by viewModels()
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var topHelperAdapter: TopHelperAdapter
+    private var hasClickedExploreButton = false
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMessagesBinding.inflate(inflater, container, false)
@@ -40,8 +41,107 @@ class MessagesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerViews()
+        setupClickListeners()
         observeConversations()
         observeTopHelpers()
+    }
+    
+    private fun setupClickListeners() {
+        binding.buttonExploreHelpers.setOnClickListener {
+            animateButtonToTitle()
+        }
+        
+        binding.buttonChatIcon.setOnClickListener {
+            scrollToMessages()
+        }
+    }
+    
+    private fun scrollToMessages() {
+        val title = binding.textViewTopHelpersTitle
+        val scrollView = binding.root as androidx.core.widget.NestedScrollView
+        
+        val titleAnimator = android.animation.ObjectAnimator.ofFloat(title, "alpha", 1f, 0f)
+        titleAnimator.duration = 300
+        titleAnimator.start()
+        
+        val recyclerViewAnimator = android.animation.ObjectAnimator.ofFloat(binding.recyclerViewTopHelpers, "alpha", 1f, 0f)
+        recyclerViewAnimator.duration = 300
+        recyclerViewAnimator.start()
+        
+        scrollView.postDelayed({
+            binding.recyclerViewTopHelpers.visibility = View.GONE
+            binding.helpersHeaderContainer.visibility = View.GONE
+            
+            binding.recyclerViewMessages.visibility = View.VISIBLE
+            binding.emptyStateContainer.visibility = View.VISIBLE
+            binding.textViewTitle.visibility = View.VISIBLE
+            binding.buttonExploreHelpers.visibility = View.VISIBLE
+            binding.imageViewEcotourism.visibility = View.VISIBLE
+            
+            binding.textViewTitle.alpha = 0f
+            binding.recyclerViewMessages.alpha = 0f
+            binding.emptyStateContainer.alpha = 0f
+            binding.buttonExploreHelpers.alpha = 0f
+            binding.imageViewEcotourism.alpha = 0f
+            
+            val titleFadeIn = android.animation.ObjectAnimator.ofFloat(binding.textViewTitle, "alpha", 0f, 1f)
+            titleFadeIn.duration = 400
+            titleFadeIn.start()
+            
+            val messagesFadeIn = android.animation.ObjectAnimator.ofFloat(binding.recyclerViewMessages, "alpha", 0f, 1f)
+            messagesFadeIn.duration = 400
+            messagesFadeIn.start()
+            
+            val emptyStateFadeIn = android.animation.ObjectAnimator.ofFloat(binding.emptyStateContainer, "alpha", 0f, 1f)
+            emptyStateFadeIn.duration = 400
+            emptyStateFadeIn.start()
+            
+            val buttonFadeIn = android.animation.ObjectAnimator.ofFloat(binding.buttonExploreHelpers, "alpha", 0f, 1f)
+            buttonFadeIn.duration = 400
+            buttonFadeIn.start()
+            
+            val imageFadeIn = android.animation.ObjectAnimator.ofFloat(binding.imageViewEcotourism, "alpha", 0f, 1f)
+            imageFadeIn.duration = 400
+            imageFadeIn.start()
+            
+            scrollView.smoothScrollTo(0, 0)
+        }, 300)
+    }
+    
+    private fun animateButtonToTitle() {
+        hasClickedExploreButton = true
+        val button = binding.buttonExploreHelpers
+        val title = binding.textViewTopHelpersTitle
+        val scrollView = binding.root as androidx.core.widget.NestedScrollView
+        
+        viewModel.refreshTopHelpers()
+        
+        title.alpha = 0f
+        title.visibility = View.VISIBLE
+        binding.recyclerViewTopHelpers.visibility = View.VISIBLE
+        
+        val buttonAnimator = android.animation.ObjectAnimator.ofFloat(button, "alpha", 1f, 0f)
+        buttonAnimator.duration = 300
+        buttonAnimator.start()
+        
+        val imageAnimator = android.animation.ObjectAnimator.ofFloat(binding.imageViewEcotourism, "alpha", 1f, 0f)
+        imageAnimator.duration = 300
+        imageAnimator.start()
+        
+        scrollView.postDelayed({
+            binding.recyclerViewMessages.visibility = View.GONE
+            binding.emptyStateContainer.visibility = View.GONE
+            binding.textViewTitle.visibility = View.GONE
+            binding.imageViewEcotourism.visibility = View.GONE
+            button.visibility = View.GONE
+            
+            binding.helpersHeaderContainer.visibility = View.VISIBLE
+            val titleAnimator = android.animation.ObjectAnimator.ofFloat(title, "alpha", 0f, 1f)
+            titleAnimator.duration = 400
+            titleAnimator.start()
+            
+            scrollView.smoothScrollTo(0, 0)
+        }, 300)
     }
     
     private fun setupRecyclerViews() {
@@ -62,13 +162,18 @@ class MessagesFragment : Fragment() {
             adapter = messageAdapter
         }
         
-        topHelperAdapter = TopHelperAdapter { helper ->
-            Toast.makeText(
-                requireContext(),
-                "View profile: ${helper.fullName}",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        topHelperAdapter = TopHelperAdapter(
+            onItemClick = { helper ->
+                Toast.makeText(
+                    requireContext(),
+                    "View profile: ${helper.fullName}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            },
+            onMessageClick = { helper ->
+                startConversationWithHelper(helper)
+            }
+        )
         
         binding.recyclerViewTopHelpers.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -113,11 +218,7 @@ class MessagesFragment : Fragment() {
                     }
                     is Resource.Error -> {
                         showLoading(false)
-                        Toast.makeText(
-                            requireContext(),
-                            resource.message ?: "Failed to load conversations",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showEmptyState(true)
                     }
                 }
             }
@@ -128,14 +229,29 @@ class MessagesFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.topHelpers.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> {}
+                    is Resource.Loading -> {
+                        android.util.Log.d("MessagesFragment", "Loading top helpers...")
+                    }
                     is Resource.Success -> {
                         val helpers = resource.data ?: emptyList()
+                        android.util.Log.d("MessagesFragment", "Loaded ${helpers.size} top helpers")
                         topHelperAdapter.submitList(helpers)
-                        binding.textViewTopHelpersTitle.visibility = if (helpers.isNotEmpty()) View.VISIBLE else View.GONE
+                        if (hasClickedExploreButton) {
+                            binding.helpersHeaderContainer.visibility = if (helpers.isNotEmpty()) View.VISIBLE else View.GONE
+                            binding.recyclerViewTopHelpers.visibility = if (helpers.isNotEmpty()) View.VISIBLE else View.GONE
+                        }
                     }
                     is Resource.Error -> {
-                        binding.textViewTopHelpersTitle.visibility = View.GONE
+                            android.util.Log.e("MessagesFragment", "Error loading top helpers: ${resource.message}")
+                                if (hasClickedExploreButton) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error loading helpers: ${resource.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                binding.helpersHeaderContainer.visibility = View.GONE
+                                binding.recyclerViewTopHelpers.visibility = View.GONE
                     }
                 }
             }
@@ -197,6 +313,44 @@ class MessagesFragment : Fragment() {
             "Chat with ${otherUser.name} deleted",
             Toast.LENGTH_SHORT
         ).show()
+    }
+    
+    private fun startConversationWithHelper(helper: ca.unb.mobiledev.handyhub.messages.domain.model.TopHelper) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val otherUserDetails = mapOf(
+                "name" to helper.fullName,
+                "category" to helper.category,
+                "imageUrl" to helper.imageUrl
+            )
+            
+            val result = viewModel.startConversation(helper.id, otherUserDetails)
+            when (result) {
+                is Resource.Success -> {
+                    val conversationId = result.data ?: return@launch
+                    val firstName = helper.fullName.split(" ").firstOrNull() ?: helper.fullName
+                    val bundle = Bundle().apply {
+                        putString("conversationId", conversationId)
+                        putString("workerName", firstName)
+                        putString("workerCategory", helper.category)
+                        putString("workerImageUrl", helper.imageUrl)
+                    }
+                    findNavController().navigate(
+                        R.id.action_messagesFragment_to_chatFragment,
+                        bundle
+                    )
+                }
+                is Resource.Error -> {
+                    Toast.makeText(
+                        requireContext(),
+                        result.message ?: "Failed to start conversation",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Resource.Loading -> {
+                    // Show loading if needed
+                }
+            }
+        }
     }
     
     override fun onDestroyView() {

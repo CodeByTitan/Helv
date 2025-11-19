@@ -243,55 +243,71 @@ class MessagesRepositoryImpl @Inject constructor(
 
     override suspend fun getTopHelpers(): Resource<List<TopHelper>> {
         return try {
-            val helpers = listOf(
-                TopHelper(
-                    id = "1",
-                    fullName = "Sarah Johnson",
-                    category = "Professional House Cleaning",
-                    location = "Downtown",
-                    distance = "1.2 km",
-                    rating = 4.9,
-                    pricePerHour = 45,
-                    imageUrl = "https://i.pravatar.cc/150?img=1",
-                    isAvailable = true
-                ),
-                TopHelper(
-                    id = "2",
-                    fullName = "Michael Chen",
-                    category = "Appliance Repair Specialist",
-                    location = "North End",
-                    distance = "2.5 km",
-                    rating = 4.8,
-                    pricePerHour = 60,
-                    imageUrl = "https://i.pravatar.cc/150?img=12",
-                    isAvailable = true
-                ),
-                TopHelper(
-                    id = "3",
-                    fullName = "Emily Rodriguez",
-                    category = "Spa & Beauty Treatments",
-                    location = "Midtown",
-                    distance = "0.8 km",
-                    rating = 5.0,
-                    pricePerSession = 55,
-                    imageUrl = "https://i.pravatar.cc/150?img=5",
-                    isAvailable = false
-                ),
-                TopHelper(
-                    id = "4",
-                    fullName = "James Wilson",
-                    category = "Personal Fitness Trainer",
-                    location = "Westside",
-                    distance = "1.5 km",
-                    rating = 4.7,
-                    pricePerHour = 50,
-                    imageUrl = "https://i.pravatar.cc/150?img=13",
-                    isAvailable = true
-                )
-            )
-
-            Resource.Success(helpers)
+            android.util.Log.d("MessagesRepository", "Fetching top helpers from Firebase")
+            
+            val snapshot = try {
+                firestore.collection("workers")
+                    .whereEqualTo("is_active", true)
+                    .orderBy("rating", Query.Direction.DESCENDING)
+                    .limit(5)
+                    .get()
+                    .await()
+            } catch (e: com.google.firebase.firestore.FirebaseFirestoreException) {
+                if (e.code == com.google.firebase.firestore.FirebaseFirestoreException.Code.FAILED_PRECONDITION) {
+                    android.util.Log.w("MessagesRepository", "Index missing, trying without orderBy")
+                    firestore.collection("workers")
+                        .whereEqualTo("is_active", true)
+                        .limit(5)
+                        .get()
+                        .await()
+                } else {
+                    throw e
+                }
+            }
+            
+            android.util.Log.d("MessagesRepository", "Found ${snapshot.documents.size} workers")
+            
+            val helpers = snapshot.documents.mapNotNull { document ->
+                try {
+                    val name = document.getString("name") ?: return@mapNotNull null
+                    val category = document.getString("category") ?: ""
+                    val city = document.getString("city") ?: ""
+                    val state = document.getString("state") ?: ""
+                    val location = if (city.isNotEmpty() && state.isNotEmpty()) {
+                        "$city, $state"
+                    } else if (city.isNotEmpty()) {
+                        city
+                    } else {
+                        "Location not specified"
+                    }
+                    
+                    val rating = document.getDouble("rating")?.toDouble() ?: 0.0
+                    val hourlyRate = document.getLong("hourly_rate")?.toInt()
+                    val profilePicture = document.getString("profile_picture") ?: ""
+                    val availabilityStatus = document.getString("availability_status") ?: "unavailable"
+                    val isAvailable = availabilityStatus.lowercase() == "available"
+                    
+                    TopHelper(
+                        id = document.id,
+                        fullName = name,
+                        category = category,
+                        location = location,
+                        distance = "N/A",
+                        rating = rating,
+                        pricePerHour = hourlyRate,
+                        imageUrl = profilePicture,
+                        isAvailable = isAvailable
+                    )
+                } catch (e: Exception) {
+                    android.util.Log.e("MessagesRepository", "Error parsing worker document: ${e.message}")
+                    null
+                }
+            }
+            
+            android.util.Log.d("MessagesRepository", "Successfully parsed ${helpers.size} helpers")
+            Resource.Success(helpers.sortedByDescending { it.rating })
         } catch (e: Exception) {
+            android.util.Log.e("MessagesRepository", "Error loading top helpers: ${e.message}", e)
             Resource.Error(e.message ?: "An error occurred while loading top helpers")
         }
     }

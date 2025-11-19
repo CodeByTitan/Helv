@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="ca.unb.mobiledev.handyhub.home.presentation.HomeFragment"
-        android:label="Services" />
+        android:label="Services">
+        <action
+            android:id="@+id/action_homeFragment_to_servicePickerFragment"
+            app:destination="@id/servicePickerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/jobsFragment"
@@ -37,6 +41,9 @@
         android:name="ca.unb.mobiledev.handyhub.messages.presentation.ChatFragment"
         android:label="Chat">
         <argument
+            android:name="conversationId"
+            app:argType="string" />
+        <argument
             android:name="workerName"
             app:argType="string" />
         <argument
@@ -44,6 +51,33 @@
             app:argType="string" />
         <argument
             android:name="workerImageUrl"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/servicePickerFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.ServicePickerFragment"
+        android:label="Pick Your Service">
+        <argument
+            android:name="serviceId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_servicePickerFragment_to_providersFragment"
+            app:destination="@id/providersFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/providersFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.ProvidersFragment"
+        android:label="Providers">
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+        <argument
+            android:name="category"
+            app:argType="string" />
+        <argument
+            android:name="subcategory"
             app:argType="string" />
     </fragment>
 

@@ -107,6 +107,17 @@
 
                        </LinearLayout>
 
+                       <androidx.recyclerview.widget.RecyclerView
+                           android:id="@+id/recyclerViewSearchResults"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:maxHeight="400dp"
+                           android:visibility="gone"
+                           android:background="@android:color/white"
+                           android:elevation="4dp"
+                           android:layout_marginTop="8dp"
+                           tools:listitem="@layout/item_search_result" />
+
                    </LinearLayout>
 
         

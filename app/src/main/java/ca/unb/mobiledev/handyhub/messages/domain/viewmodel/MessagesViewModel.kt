@@ -68,4 +68,9 @@ class MessagesViewModel @Inject constructor(
     fun refreshTopHelpers() {
         loadTopHelpers()
     }
+    
+    suspend fun startConversation(otherUserId: String, otherUserDetails: Map<String, Any>): Resource<String> {
+        val currentUserId = auth.currentUser?.uid ?: return Resource.Error("User not authenticated")
+        return messagesRepository.getOrCreateConversation(currentUserId, otherUserId, otherUserDetails)
+    }
 }

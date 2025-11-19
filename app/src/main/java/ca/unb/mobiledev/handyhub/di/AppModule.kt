@@ -53,4 +53,9 @@ abstract class RepositoryModule {
     abstract fun bindMessagesRepository(
         messagesRepositoryImpl: ca.unb.mobiledev.handyhub.messages.data.repository.MessagesRepositoryImpl
     ): ca.unb.mobiledev.handyhub.messages.domain.repository.MessagesRepository
+
+    @Binds
+    abstract fun bindWorkersRepository(
+        workersRepositoryImpl: ca.unb.mobiledev.handyhub.home.data.repository.WorkersRepositoryImpl
+    ): ca.unb.mobiledev.handyhub.home.domain.repository.WorkersRepository
 }
