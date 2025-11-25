@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/schedule_item_background">
+
+    <TextView
+        android:id="@+id/textViewDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Monday"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/plus_jakarta_sans_family" />
+
+    <TextView
+        android:id="@+id/textViewSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="09:00 - 17:00"
+        android:textSize="14sp"
+        android:textColor="#FF4CAF50"
+        android:fontFamily="@font/plus_jakarta_sans_family"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>
+

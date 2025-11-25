@@ -79,6 +79,29 @@
         <argument
             android:name="subcategory"
             app:argType="string" />
+        <action
+            android:id="@+id/action_providersFragment_to_workerProfileFragment"
+            app:destination="@id/workerProfileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/workerProfileFragment"
+        android:name="ca.unb.mobiledev.handyhub.home.presentation.WorkerProfileFragment"
+        android:label="Worker Profile">
+        <argument
+            android:name="workerId"
+            app:argType="string" />
+        <argument
+            android:name="scrollToAvailability"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
     </fragment>
 
 </navigation>

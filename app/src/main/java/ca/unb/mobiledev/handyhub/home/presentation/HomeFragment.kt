@@ -36,6 +36,7 @@ class HomeFragment : Fragment() {
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val viewModel: HomeViewModel by viewModels()
     private val searchViewModel: SearchViewModel by viewModels()
+    private var searchJob: kotlinx.coroutines.Job? = null
     
     companion object {
         private var animationsShown = false
@@ -124,8 +125,16 @@ class HomeFragment : Fragment() {
             
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s?.toString() ?: ""
+                
+                // Cancel previous search job
+                searchJob?.cancel()
+                
                 if (query.isNotEmpty()) {
-                    searchViewModel.search(query)
+                    // Debounce search - wait 500ms after user stops typing
+                    searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                        kotlinx.coroutines.delay(500)
+                        searchViewModel.search(query)
+                    }
                 } else {
                     searchViewModel.clearSearch()
                     binding.recyclerViewSearchResults.visibility = View.GONE

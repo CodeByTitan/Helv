@@ -11,7 +11,8 @@ import ca.unb.mobiledev.handyhub.home.domain.model.Provider
 import com.bumptech.glide.Glide
 
 class ProviderAdapter(
-    private val onItemClick: (Provider) -> Unit
+    private val onItemClick: (Provider) -> Unit,
+    private val onGetServiceClick: (Provider) -> Unit
 ) : ListAdapter<Provider, ProviderAdapter.ProviderViewHolder>(ProviderDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProviderViewHolder {
@@ -72,6 +73,10 @@ class ProviderAdapter(
                 
                 root.setOnClickListener {
                     onItemClick(provider)
+                }
+                
+                buttonGetService.setOnClickListener {
+                    onGetServiceClick(provider)
                 }
             }
         }

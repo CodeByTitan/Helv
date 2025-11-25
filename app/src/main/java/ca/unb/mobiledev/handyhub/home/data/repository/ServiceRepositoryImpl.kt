@@ -18,7 +18,7 @@ class ServiceRepositoryImpl @Inject constructor(
     override suspend fun getServices(): Resource<List<Service>> {
         return try {
               val result = firestore.collection("services")
-                .get()
+                .get(com.google.firebase.firestore.Source.CACHE)
                 .await()
 
             val services = result.documents.mapNotNull { document ->
@@ -30,7 +30,24 @@ class ServiceRepositoryImpl @Inject constructor(
                 )
             }
 
-            Resource.Success(services)
+            if (services.isEmpty()) {
+                // Fallback to server if cache is empty
+                val serverResult = firestore.collection("services")
+                    .get(com.google.firebase.firestore.Source.SERVER)
+                    .await()
+                
+                val serverServices = serverResult.documents.mapNotNull { document ->
+                    val imageUrl = document.getString("image_url") ?: return@mapNotNull null
+                    Service(
+                        id = document.id,
+                        name = document.id,
+                        imageUrl = imageUrl
+                    )
+                }
+                Resource.Success(serverServices)
+            } else {
+                Resource.Success(services)
+            }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unknown error occurred")
         }
@@ -122,9 +139,25 @@ class ServiceRepositoryImpl @Inject constructor(
             val searchQuery = query.lowercase().trim()
             val results = mutableListOf<SearchResult>()
 
-            val servicesSnapshot = firestore.collection("services").get().await()
+            // Try cache first for faster results
+            val servicesSnapshot = try {
+                firestore.collection("services")
+                    .get(com.google.firebase.firestore.Source.CACHE)
+                    .await()
+            } catch (e: Exception) {
+                // Fallback to server if cache fails
+                firestore.collection("services")
+                    .get(com.google.firebase.firestore.Source.SERVER)
+                    .await()
+            }
+
+            // Limit to first 20 results for performance
+            var resultCount = 0
+            val maxResults = 20
 
             for (serviceDoc in servicesSnapshot.documents) {
+                if (resultCount >= maxResults) break
+                
                 val serviceId = serviceDoc.id
                 
                 val collectionIds = when {
@@ -146,11 +179,16 @@ class ServiceRepositoryImpl @Inject constructor(
                 if (collectionIds.isEmpty()) continue
 
                 for (midLevelCategory in collectionIds) {
+                    if (resultCount >= maxResults) break
+                    
                     try {
                         val subcollectionRef = serviceDoc.reference.collection(midLevelCategory)
-                        val subcollectionDocs = subcollectionRef.get().await()
+                        // Limit subcollection queries
+                        val subcollectionDocs = subcollectionRef.limit(10).get().await()
 
                         for (subcategoryDoc in subcollectionDocs.documents) {
+                            if (resultCount >= maxResults) break
+                            
                             val name = subcategoryDoc.getString("name") ?: subcategoryDoc.id
                             
                             if (!isValidServiceName(name)) continue
@@ -163,6 +201,7 @@ class ServiceRepositoryImpl @Inject constructor(
                                         serviceId = serviceId
                                     )
                                 )
+                                resultCount++
                             }
                         }
                     } catch (e: Exception) {

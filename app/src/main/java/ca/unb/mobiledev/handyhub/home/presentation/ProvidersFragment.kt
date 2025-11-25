@@ -48,9 +48,14 @@ class ProvidersFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        providerAdapter = ProviderAdapter { provider ->
-            // Handle provider click
-        }
+        providerAdapter = ProviderAdapter(
+            onItemClick = { provider ->
+                navigateToWorkerProfile(provider.id, scrollToAvailability = false)
+            },
+            onGetServiceClick = { provider ->
+                navigateToWorkerProfile(provider.id, scrollToAvailability = true)
+            }
+        )
 
         binding.recyclerViewProviders.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -147,6 +152,16 @@ class ProvidersFragment : Fragment() {
     private fun showBottomNavigation() {
         val bottomNav = activity?.findViewById<View>(ca.unb.mobiledev.handyhub.R.id.bottomNavigationContainer)
         bottomNav?.visibility = View.VISIBLE
+    }
+
+    private fun navigateToWorkerProfile(workerId: String, scrollToAvailability: Boolean) {
+        val categoryName = arguments?.getString("categoryName") ?: "Service"
+        val action = ProvidersFragmentDirections.actionProvidersFragmentToWorkerProfileFragment(
+            workerId = workerId,
+            scrollToAvailability = scrollToAvailability,
+            categoryName = categoryName
+        )
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
